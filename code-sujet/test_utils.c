@@ -38,8 +38,8 @@ int main(int argc, char *argv[]){
   write(fd, argv[1]);
   fseek(fd, 0, SEEK_SET);
 
-  out = read_uint8(fd);
-  print(out, 8);
+  out = read_uint32_bigendian(fd);
+  print(out, 32);
   
   fclose(fd);
 

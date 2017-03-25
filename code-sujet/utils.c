@@ -18,11 +18,12 @@ uint8_t read_uint8(FILE *fd) {
 }
 
 uint16_t read_uint16_littleendian(FILE *fd) {
-  int n;
+  int n = 0, temp, i;
 
-  n = read_uint8(fd);
-  n = n << 8;
-  n += read_uint8(fd);
+  for (i = 0; i < 2; i++){
+    temp = read_uint8(fd);
+    n += (temp << (i*8));
+  }
 
   return (uint16_t)n;
 }
@@ -31,7 +32,7 @@ uint32_t read_uint32_littleendian(FILE *fd) {
 
   for (i = 0; i < 4; i++){
     temp = read_uint8(fd);
-    n = (temp << (i*8));
+    n += (temp << (i*8));
   }
 
   return (uint32_t)n;
@@ -49,7 +50,7 @@ uint32_t read_uint32_bigendian(FILE *fd) {
   int n = 0, i;
   
   for (i = 0; i < 4; i++){
-    n =+ read_uint8(fd) << (3-i);
+    n += read_uint8(fd) << (3-i)*8;
   }
 
   return (uint32_t)n;
