@@ -58,7 +58,6 @@ struct fat32_driver* fat32_driver_new(const char *image_name) {
   put_cursor(driver->fd, 36);
   driver->sectors_per_fat = read_uint32_littleendian(driver->fd);
 
-  fclose(driver->fd);
     
 
 #ifdef DEBUG
@@ -78,16 +77,19 @@ struct fat32_driver* fat32_driver_new(const char *image_name) {
 
 void fat32_driver_free(struct fat32_driver *driver) {
   assert(driver); /* On s'assure que ce n'est pas un pointeur NULL */
+  fclose(driver->fd);
   free(driver);
 }
 
 
 uint32_t next_cluster_index(const struct fat32_driver *driver, uint32_t cluster_index) {
-  assert(0); // TODO: remplacez-moi
+  uint32_t position = (uint32_t)driver->bytes_per_sector * (uint32_t)driver->sectors_per_cluster + cluster_index * 4;
+  fseek(driver->fd, position, SEEK_SET);
+  return read_uint32_littleendian(driver->fd);
 }
 
 uint32_t get_cluster_sector(const struct fat32_driver *driver, uint32_t cluster_index) {
-  assert(0); // TODO: remplacez-moi
+  return (uint32_t)driver->nb_reserved_sectors + driver->nb_fats * driver->sectors_per_fat + (uint32_t)driver->sectors_per_cluster * (cluster_index - 2 );
 }
 
 void read_in_cluster(const struct fat32_driver *driver, uint32_t cluster, uint32_t offset, size_t size, uint8_t *buf) {
