@@ -1,0 +1,9 @@
+Exercice 1:
+	 1) bigendian et littleendian pour 8 bits, c'est pareil
+
+Exercice 3:
+	 1) On connait le nombre de secteurs réservés et la taille d'un secteur, il suffit de faire taille_secteur * nbr_secteurs_reserves
+	 2) taille_secteur * nbr_secteurs_reserves + 4 bytes * n
+	 
+Exercice 5:
+	 1) C'est le numéro du premier cluster du fichier coupé en 2

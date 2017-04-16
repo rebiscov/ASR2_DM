@@ -1,0 +1,33 @@
+Algo(C,p):
+	Tant que |p| < |cluster|
+	     C = FAT[C] // On prend le cluster suivant
+	     p -= taille_cluster	
+	Retourne (C, p)
+
+Algo(size, p, C):
+	   octets_a_lire = size
+	   while (octet_a_lire > 0)
+	   	 if p + octets_a_lire > bytes_per_cluster
+		    read_in_cluster(driver, C, p, bytes_per_cluster - p, buf)
+		    p = 0
+		    octets_a_lire -= (bytes_per_cluster - p)
+		    buf += bytes_per_cluster - p
+		    C = FAT[C]
+		 else
+		    read_in_cluster(driver, C, p, octets_a_lire, buf)
+
+Algo(node):
+	b1 b2 = octets de poids forts
+	b3 b4 = octets de poids faible
+	retourne b1 b2 b3 b4; (on "concatène")
+
+Algo(node, name)
+	   if node_name(node) = name
+	      return node
+	   else
+	      liste_enfants = get_children(node)
+	      nom = premier_nom(name)
+	      Parcours liste_enfants
+	      	       si node_name(enfant) = nom
+		       	  Algo(enfant, name)
+		      	     
