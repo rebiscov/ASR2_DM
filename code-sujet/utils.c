@@ -7,14 +7,10 @@
 #include "utils.h"
 
 uint8_t read_uint8(FILE *fd) {
-  int i, n = 0;
-  for (i = 0; i < 8; i ++){
-    n += fgetc(fd);
-    n = n << 1;
-  }
-  n = n >> 1;
+  uint8_t n;
+  fread(&n, 1, 1, fd);
 
-  return (uint8_t)n;
+  return n;
 }
 
 uint16_t read_uint16_littleendian(FILE *fd) {

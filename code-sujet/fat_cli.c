@@ -20,12 +20,38 @@ void print_help() {
 
 /* Vous pouvez éventuellement utiliser une fonction auxiliaire pour 'tree' */
 
+void shift(unsigned int i){
+  for (unsigned int j = 0; j < 2*i; j++)
+    printf(" ");
+}
+
+void tree_aux(struct fat32_node *node, unsigned int prof){
+  const char *name = fat32_node_get_name(node);
+
+  if (!(strcmp(name, "..") == 0 || strcmp(name, ".") == 0)){
+    if (fat32_node_is_dir(node)){
+      shift(prof);
+      printf("%s/\n", name);
+      struct fat32_node_list* sub_d = fat32_node_get_children(node);
+      struct fat32_node_list* parcours = sub_d;
+      while (parcours != NULL){
+	tree_aux(parcours->node, prof + 1);
+	parcours = parcours->next;
+      }
+    }
+    else{
+      shift(prof);
+      printf("%s\n", name);
+    }
+  }
+}
+
 /* Gestion de la commande "tree". */
 int tree(char* fat_disk) {
     struct fat32_driver *driver = fat32_driver_new(fat_disk);
     struct fat32_node *root = fat32_driver_get_root_dir(driver);
 
-    assert(0); // TODO: remplacez-moi
+    tree_aux(root, 0);
 
     fat32_node_free(root);
     fat32_driver_free(driver);
