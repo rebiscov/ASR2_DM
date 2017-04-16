@@ -26,7 +26,7 @@ int tree(char* fat_disk) {
     struct fat32_node *root = fat32_driver_get_root_dir(driver);
 
     assert(0); // TODO: remplacez-moi
-    //
+
     fat32_node_free(root);
     fat32_driver_free(driver);
     return EXIT_SUCCESS;
