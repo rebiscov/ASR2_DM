@@ -10,7 +10,6 @@
 #define LFN_ENTRY_SIZE 32
 #define LFN_ENTRY_CHARACTERS 13
 #define ENTRY_SIZE 32
-#define DEBUG
 
 struct fat32_node {
   const struct fat32_driver *driver;
@@ -342,29 +341,18 @@ struct fat32_node_list* fat32_node_get_children(const struct fat32_node *node) {
 
 char* get_next_name(const char *name){
   char *next_name = NULL;
-  unsigned int offset;
-  unsigned int i = 0;
+  unsigned int offset, i = 0, n = (unsigned int)strlen(name);
   
   next_name = malloc(500*sizeof(char));
   
   for (offset = 0; name[offset] == '/'; offset++);
   
-  while(name[offset] != '/'){
+  while(name[offset] != '/' && offset < n){
     next_name[i] = name[offset];
     i++; offset++;
   }
   next_name[offset] = '\0';
   return next_name;
-}
-
-char* get_next_path(char *name){
-  unsigned int offset = 0;
-  for (offset = 0; name[offset] == '/'; offset++);
-  for (; name[offset] != '/'; offset++);
-
-  char *path = name + offset;
-  
-  return path;
 }
 
 struct fat32_node* copy_node(const struct fat32_node *node){
@@ -383,17 +371,28 @@ struct fat32_node* copy_node(const struct fat32_node *node){
 }
 
 struct fat32_node* fat32_node_get_path(const struct fat32_node *node, const char *path) {
-  const char *name = fat32_node_get_name(node);
-  const char *name_aux = get_next_name(path);
-  const char *next_path = get_next_path(); 
+  const char *name = fat32_node_get_name(node), *name_aux = get_next_name(path);
   
-  if (strcmp(name, path) == 0)
+  if (strcmp("", path) == 0){
     return copy_node(node);
+  }
   else{
     struct fat32_node_list* list = fat32_node_get_children(node);
-    while (strcmp(name_aux, fat32_node_get_name(list->node)) != 0)
+    while (strcmp(name_aux, fat32_node_get_name(list->node)) != 0 ){
       list = list->next;
-    fat32_node_get_path(list->node, next_path);
+      if (list == NULL)
+	break;
+    }
+    
+    if (list == NULL)
+      return NULL;
+    
+    unsigned int n = (unsigned int)strlen(path);
+    unsigned int offset;
+    for (offset = 0; path[offset] == '/'; offset++);
+    for (; path[offset] != '/' && offset < n; offset++);
+
+    return fat32_node_get_path(list->node, path + offset);
   }
 }
 

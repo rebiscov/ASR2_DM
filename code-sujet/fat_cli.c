@@ -38,6 +38,7 @@ void tree_aux(struct fat32_node *node, unsigned int prof){
 	tree_aux(parcours->node, prof + 1);
 	parcours = parcours->next;
       }
+      fat32_node_list_free(sub_d);
     }
     else{
       shift(prof);
@@ -62,8 +63,24 @@ int tree(char* fat_disk) {
 int ls(char* fat_disk, char* path) {
     struct fat32_driver *driver = fat32_driver_new(fat_disk);
     struct fat32_node *root = fat32_driver_get_root_dir(driver);
+    struct fat32_node *folder = fat32_node_get_path(root, path);
+    if (folder == NULL){
+      printf("'%s' is not a valid path\n", path);
+      return EXIT_SUCCESS;
+    }
 
-    assert(0); // TODO: remplacez-moi
+    struct fat32_node_list* content = fat32_node_get_children(folder);
+    struct fat32_node_list* p = content;
+    
+    while (p != NULL){
+      printf("%s", fat32_node_get_name(p->node));
+      if (fat32_node_is_dir(p->node))
+	  printf("/");
+      printf("\n");
+      p = p->next;
+    }
+    fat32_node_list_free(content);
+    return EXIT_SUCCESS;
 }
 
 /* Gestion de la commande "cat". */
