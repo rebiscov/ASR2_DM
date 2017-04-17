@@ -16,5 +16,4 @@ a_subdirectory/
 ./
 	J'ai choisi de garder ./ et ../ mais c'est très facile à enlever bien sur
 
-Exercice 7:
 	 

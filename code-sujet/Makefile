@@ -21,6 +21,5 @@ test_utils.o:
 
 clean:
 	rm -f *.o
-	rm fat_cli
 
 .PHONY: clean

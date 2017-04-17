@@ -92,13 +92,22 @@ int ls(char* fat_disk, char* path) {
 int cat(char* fat_disk, char* path) {
     struct fat32_driver *driver = fat32_driver_new(fat_disk);
     struct fat32_node *root = fat32_driver_get_root_dir(driver);
-    struct fat32_node *folder = fat32_node_get_path(root, path);
+    struct fat32_node *file = fat32_node_get_path(root, path);
 
-    
+    if (file == NULL){
+      printf("'%s' is not a valid path !\n", path);
+      fat32_driver_free(driver);
+      fat32_node_free(root);
+      
+      return EXIT_SUCCESS;
+    }
+
+    fat32_node_read_to_fd(file, stdout);
+
     
     fat32_driver_free(driver);
     fat32_node_free(root);
-    fat32_node_free(folder);
+    fat32_node_free(file);
     return EXIT_SUCCESS;
 }
 

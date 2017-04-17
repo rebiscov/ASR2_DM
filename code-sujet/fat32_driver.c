@@ -207,27 +207,23 @@ void read_name(struct fat32_node *node) {
     }
   }
   else { /* Short file name */
-    /*
     uint8_t buf[11];
+    size_t nb_char = 7;
+    
     read_node_entry(node, 0, 11, buf);
-    memcpy(node->name, buf, 8);
-    memcpy(node->name + 9, buf + 8, 3);
-    node->name[8] = '.';
-    */
-    uint8_t dump[11];
-    read_node_entry(node, 0, 11, dump);
-    size_t last_char = 7, next;
-    while (last_char && dump[last_char] == ' ') last_char--;
-    next = last_char + 1;
-    memcpy(node->name, dump, next); 
+    
+    while (nb_char && buf[nb_char] == ' ')
+      nb_char--;
+    nb_char++;
+    memcpy(node->name, buf, nb_char); 
 
-    if (dump[8] != ' ') {
-      node->name[next++] = '.';
-      memcpy(node->name + next, dump + 8, 3);
-      next += 3;
+    if (buf[8] != ' '){
+      node->name[nb_char] = '.';
+      nb_char++;
+      memcpy(node->name + nb_char, buf + 8, 3);
+      nb_char += 3;
     }
-
-    node->name[next] = '\0';
+    node->name[nb_char] = '\0';
 
     node->nb_lfn_entries = 0;
   }
@@ -343,7 +339,7 @@ char* get_next_name(const char *name){
   char *next_name = NULL;
   unsigned int offset, i = 0, n = (unsigned int)strlen(name);
   
-  next_name = malloc(500*sizeof(char));
+  next_name = malloc(strlen(name)*sizeof(char));
   
   for (offset = 0; name[offset] == '/'; offset++);
   
