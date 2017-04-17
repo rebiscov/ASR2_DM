@@ -6,7 +6,7 @@ Exercice 3:
 	 2) taille_secteur * nbr_secteurs_reserves + 4 bytes * n
 	 
 Exercice 5:
-	 1) C'est le numéro du premier cluster du fichier coupé en 2
+	 1) C'est le numéro du premier cluster du fichier coupé en 2
 Exercice 6:
 	 4) le résultat est:
 	 
@@ -16,4 +16,4 @@ a_subdirectory/
 ./
 	J'ai choisi de garder ./ et ../ mais c'est très facile à enlever bien sur
 
-	 
+		 
