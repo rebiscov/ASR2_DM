@@ -44,7 +44,7 @@ struct fat32_driver* fat32_driver_new(const char *image_name) {
   struct fat32_driver *driver = malloc(sizeof(struct fat32_driver));
   assert(driver); /* On s'assure que la mémoire a bien été allouée. */
 
-  driver->fd = fopen(image_name, "r");
+  driver->fd = fopen(image_name, "rb");
   
   put_cursor(driver->fd, 11);
   driver->bytes_per_sector = read_uint16_littleendian(driver->fd);
@@ -378,10 +378,13 @@ struct fat32_node* fat32_node_get_path(const struct fat32_node *node, const char
   }
   else{
     struct fat32_node_list* list = fat32_node_get_children(node);
+    struct fat32_node_list* l = list;
     while (strcmp(name_aux, fat32_node_get_name(list->node)) != 0 ){
       list = list->next;
-      if (list == NULL)
+      if (list == NULL){
+	fat32_node_list_free(l);
 	break;
+      }
     }
     
     if (list == NULL)
@@ -392,14 +395,19 @@ struct fat32_node* fat32_node_get_path(const struct fat32_node *node, const char
     for (offset = 0; path[offset] == '/'; offset++);
     for (; path[offset] != '/' && offset < n; offset++);
 
-    return fat32_node_get_path(list->node, path + offset);
+    struct fat32_node* ret = fat32_node_get_path(list->node, path + offset);
+    fat32_node_list_free(l);
+
+    return ret;
   }
 }
 
 void fat32_node_read_to_fd(const struct fat32_node *node, FILE *fd) {
   uint32_t first_content_cluster = get_content_cluster(node);
 
-  uint32_t content_size; assert(0); // TODO: remplacez-moi
+  uint8_t temp[4];
+  read_node_entry(node, 28 + node->nb_lfn_entries * LFN_ENTRY_SIZE, 4, temp);
+  uint32_t content_size = (uint32_t) (temp[0] + (temp[1] << 8) + (temp[2] << 16) + (temp[3] << 24));
 
   uint32_t buffer_size = (uint32_t) (node->driver->bytes_per_sector*node->driver->sectors_per_cluster);
   char buffer[buffer_size];
